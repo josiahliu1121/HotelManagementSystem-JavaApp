@@ -28,6 +28,10 @@ public class BookingMapper implements Mapper{
 
     @Override
     public void delete(Long id) {
+        //update the data in daily room status
+        Booking booking = findById(id);
+        DailyRoomStatusMapper.instance.deleteBooking(booking.getDailyRoomStatusId());
+
         String sql = "delete from booking where id=?";
         int rows = jdbcExecutor.executeUpdate(sql, id);
 
@@ -45,6 +49,13 @@ public class BookingMapper implements Mapper{
     public List<Booking> findAll() {
         String sql = "select * from booking";
         return jdbcExecutor.executeQuery(sql, resultMapper);
+    }
+
+    public Booking findById(Long id) {
+        String sql = "select * from booking where id=?";
+
+        List<Booking> result = jdbcExecutor.executeQuery(sql, resultMapper, id);
+        return result.isEmpty() ? null : result.get(0);
     }
 
     public List<Booking> findByDate(LocalDate localDate) {

@@ -76,7 +76,7 @@ public class EmployeeForm extends FormInterface {
             int gender = Employee.getStringInt(genderComboBox.getSelectedItem().toString());
 
             //validate the form
-            if(!validateFields(username, name, phone)) {
+            if(!validateFields(username, name, phone, id != null)) {
                 throw new IllegalArgumentException("Invalid input");
             }
 
@@ -127,7 +127,7 @@ public class EmployeeForm extends FormInterface {
         usernameField.setEnabled(false);
     }
 
-    private boolean validateFields(String username, String name, String phone) {
+    private boolean validateFields(String username, String name, String phone, boolean isUpdate) {
         if(username.isEmpty() || name.isEmpty() || phone.isEmpty()) {
             JOptionPane.showMessageDialog(employeePanel, "Please fill all the fields correctly.");
             return false;
@@ -149,7 +149,12 @@ public class EmployeeForm extends FormInterface {
             return false;
         }
 
+        if(isUpdate){
+            return true;
+        }
+
         //Check if username is duplicate
+        //Only check for insert
         List<String> usernameList = EmployeeMapper.instance.findUserName();
         if(usernameList.contains(username)) {
             JOptionPane.showMessageDialog(employeePanel, "Username is already in use!");

@@ -218,6 +218,8 @@ public class BookingForm extends FormInterface {
 
                 BookingMapper.instance.insert(booking);
 
+                DailyRoomStatusMapper.instance.newBooking(dailyRoomStatusId);
+
                 JOptionPane.showMessageDialog(this, "Booking Updated:\n" +
                         "Id: " + id + "\n" +
                         "Customer Name: " + customerName + "\n" +

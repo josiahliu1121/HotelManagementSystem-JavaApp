@@ -39,7 +39,7 @@ public class DailyRoomStatusMapper implements Mapper{
     }
 
     public List<DailyRoomStatus> findByDate(LocalDate date) {
-        String sql = "SELECT * FROM daily_room_status WHERE date = ?";
+        String sql = "SELECT * FROM daily_room_status WHERE date = ? AND available_count != 0";
         return jdbcExecutor.executeQuery(sql, resultMapper, Date.valueOf(date)); // Convert LocalDate to SQL Date
     }
 
@@ -63,4 +63,36 @@ public class DailyRoomStatusMapper implements Mapper{
 
         return result.isEmpty() ? 0 : result.get(0);
     }
+
+    public void newBooking(Long id) {
+        //get the old data
+        DailyRoomStatus dailyRoomStatus = findByRoomTypeId(id);
+
+        //update data
+        String sql = "update daily_room_status set available_count =?,booked_count =? where id=?";
+
+        int rows = jdbcExecutor.executeUpdate(sql, dailyRoomStatus.getAvailableCount() - 1,dailyRoomStatus.getBookedCount() + 1, id);
+
+        System.out.println("Updated rows: " + rows);
+    }
+
+    public void deleteBooking(Long id) {
+        //get the old data
+        DailyRoomStatus dailyRoomStatus = findByRoomTypeId(id);
+
+        //update data
+        String sql = "update daily_room_status set available_count =?,booked_count =? where id=?";
+
+        int rows = jdbcExecutor.executeUpdate(sql, dailyRoomStatus.getAvailableCount() + 1,dailyRoomStatus.getBookedCount() - 1, id);
+
+        System.out.println("Updated rows: " + rows);
+    }
+
+    public DailyRoomStatus findByRoomTypeId(Long id) {
+        String sql = "SELECT * FROM daily_room_status WHERE id = ?";
+
+        List<DailyRoomStatus> results = jdbcExecutor.executeQuery(sql, resultMapper, id);
+        return results.isEmpty() ? null : results.get(0);
+    }
+
 }
